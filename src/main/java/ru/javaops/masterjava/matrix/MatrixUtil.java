@@ -18,18 +18,23 @@ public class MatrixUtil {
         return matrixC;
     }
 
-    // TODO optimize by https://habrahabr.ru/post/114797/
     public static int[][] singleThreadMultiply(int[][] matrixA, int[][] matrixB) {
         final int matrixSize = matrixA.length;
         final int[][] matrixC = new int[matrixSize][matrixSize];
 
-        for (int i = 0; i < matrixSize; i++) {
-            for (int j = 0; j < matrixSize; j++) {
-                int sum = 0;
-                for (int k = 0; k < matrixSize; k++) {
-                    sum += matrixA[i][k] * matrixB[k][j];
+        int[] thatColumn = new int[matrixSize];
+        for (int bCol = 0; bCol < matrixSize; bCol++) {
+            for (int aCol = 0; aCol < matrixSize; aCol++) {
+                thatColumn[aCol] = matrixB[aCol][bCol];
+            }
+
+            for (int aRow = 0; aRow < matrixSize; aRow++) {
+                int[] thisRow = matrixA[aRow];
+                int summand = 0;
+                for (int aCol = 0; aCol < matrixSize; aCol++) {
+                    summand += thisRow[aCol] * thatColumn[aCol];
                 }
-                matrixC[i][j] = sum;
+                matrixC[aRow][bCol] = summand;
             }
         }
         return matrixC;
