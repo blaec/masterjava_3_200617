@@ -26,7 +26,7 @@ public class MatrixUtil {
             }
             final int row = bCol;
 
-            Runnable runnable = () -> {
+            Callable<Void> callable = () -> {
                 for (int aRow = 0; aRow < matrixSize; aRow++) {
                     int[] thisRow = matrixA[aRow];
                     int summand = 0;
@@ -35,8 +35,9 @@ public class MatrixUtil {
                     }
                     matrixC[aRow][row] = summand;
                 }
+                return null;
             };
-            callables.add(toCallable(runnable));
+            callables.add(callable);
         }
 
         try {
@@ -46,13 +47,6 @@ public class MatrixUtil {
         }
 
         return matrixC;
-    }
-
-    private static Callable<Void> toCallable(final Runnable runnable) {
-        return () -> {
-            runnable.run();
-            return null;
-        };
     }
 
     public static int[][] singleThreadMultiply(int[][] matrixA, int[][] matrixB) {
