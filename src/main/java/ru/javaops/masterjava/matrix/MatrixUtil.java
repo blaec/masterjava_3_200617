@@ -15,23 +15,30 @@ import java.util.concurrent.Future;
 public class MatrixUtil {
 
     public static int[][] concurrentMultiply(int[][] matrixA, int[][] matrixB, ExecutorService executor) {
-        long start = System.currentTimeMillis();
         final int matrixSize = matrixA.length;
         final int[][] matrixC = new int[matrixSize][matrixSize];
         List<Runnable> runnables = new ArrayList<>();
-        System.out.println(String.format("start tasks %d", System.currentTimeMillis()-start));
-        for (int i = 0; i < matrixSize; i++) {
-            final int row = i;
+
+        for (int bCol = 0; bCol < matrixSize; bCol++) {
+            final int[] thatColumn = new int[matrixSize];
+            for (int aCol = 0; aCol < matrixSize; aCol++) {
+                thatColumn[aCol] = matrixB[aCol][bCol];
+            }
+            final int row = bCol;
+
             Runnable runnable = () -> {
-                for (int j = 0; j < matrixSize; j++) {
-                    matrixC[row][j] = 0;
-                    for (int k = 0; k < matrixSize; k++) {
-                        matrixC[row][j] += matrixA[row][k] * matrixB[k][j];
+                for (int aRow = 0; aRow < matrixSize; aRow++) {
+                    int[] thisRow = matrixA[aRow];
+                    int summand = 0;
+                    for (int aCol = 0; aCol < matrixSize; aCol++) {
+                        summand += thisRow[aCol] * thatColumn[aCol];
                     }
+                    matrixC[aRow][row] = summand;
                 }
             };
             runnables.add(runnable);
         }
+
         List<Callable<Void>> callables = new ArrayList<>();
         for (Runnable r : runnables) {
             callables.add(toCallable(r));
@@ -42,18 +49,14 @@ public class MatrixUtil {
         } catch (InterruptedException e) {
             e.printStackTrace();
         }
-        System.out.println(String.format("get tasks %d", System.currentTimeMillis()-start));
 
         return matrixC;
     }
 
     private static Callable<Void> toCallable(final Runnable runnable) {
-        return new Callable<Void>() {
-            @Override
-            public Void call() {
-                runnable.run();
-                return null;
-            }
+        return () -> {
+            runnable.run();
+            return null;
         };
     }
 
