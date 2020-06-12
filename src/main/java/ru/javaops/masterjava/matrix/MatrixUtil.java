@@ -17,7 +17,7 @@ public class MatrixUtil {
     public static int[][] concurrentMultiply(int[][] matrixA, int[][] matrixB, ExecutorService executor) {
         final int matrixSize = matrixA.length;
         final int[][] matrixC = new int[matrixSize][matrixSize];
-        List<Runnable> runnables = new ArrayList<>();
+        List<Callable<Void>> callables = new ArrayList<>();
 
         for (int bCol = 0; bCol < matrixSize; bCol++) {
             final int[] thatColumn = new int[matrixSize];
@@ -36,12 +36,7 @@ public class MatrixUtil {
                     matrixC[aRow][row] = summand;
                 }
             };
-            runnables.add(runnable);
-        }
-
-        List<Callable<Void>> callables = new ArrayList<>();
-        for (Runnable r : runnables) {
-            callables.add(toCallable(r));
+            callables.add(toCallable(runnable));
         }
 
         try {
