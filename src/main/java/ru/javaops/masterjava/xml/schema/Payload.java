@@ -42,6 +42,17 @@ import javax.xml.bind.annotation.XmlType;
  *             &lt;/complexContent>
  *           &lt;/complexType>
  *         &lt;/element>
+ *         &lt;element name="Groups">
+ *           &lt;complexType>
+ *             &lt;complexContent>
+ *               &lt;restriction base="{http://www.w3.org/2001/XMLSchema}anyType">
+ *                 &lt;sequence maxOccurs="unbounded">
+ *                   &lt;element ref="{http://javaops.ru}Group"/>
+ *                 &lt;/sequence>
+ *               &lt;/restriction>
+ *             &lt;/complexContent>
+ *           &lt;/complexType>
+ *         &lt;/element>
  *         &lt;element name="Users">
  *           &lt;complexType>
  *             &lt;complexContent>
@@ -72,6 +83,8 @@ public class Payload {
     protected Payload.Cities cities;
     @XmlElement(name = "Projects", namespace = "http://javaops.ru", required = true)
     protected Payload.Projects projects;
+    @XmlElement(name = "Groups", namespace = "http://javaops.ru", required = true)
+    protected Payload.Groups groups;
     @XmlElement(name = "Users", namespace = "http://javaops.ru", required = true)
     protected Payload.Users users;
 
@@ -121,6 +134,30 @@ public class Payload {
      */
     public void setProjects(Payload.Projects value) {
         this.projects = value;
+    }
+
+    /**
+     * Gets the value of the groups property.
+     * 
+     * @return
+     *     possible object is
+     *     {@link Payload.Groups }
+     *     
+     */
+    public Payload.Groups getGroups() {
+        return groups;
+    }
+
+    /**
+     * Sets the value of the groups property.
+     * 
+     * @param value
+     *     allowed object is
+     *     {@link Payload.Groups }
+     *     
+     */
+    public void setGroups(Payload.Groups value) {
+        this.groups = value;
     }
 
     /**
@@ -203,6 +240,66 @@ public class Payload {
                 city = new ArrayList<CityType>();
             }
             return this.city;
+        }
+
+    }
+
+
+    /**
+     * <p>Java class for anonymous complex type.
+     * 
+     * <p>The following schema fragment specifies the expected content contained within this class.
+     * 
+     * <pre>
+     * &lt;complexType>
+     *   &lt;complexContent>
+     *     &lt;restriction base="{http://www.w3.org/2001/XMLSchema}anyType">
+     *       &lt;sequence maxOccurs="unbounded">
+     *         &lt;element ref="{http://javaops.ru}Group"/>
+     *       &lt;/sequence>
+     *     &lt;/restriction>
+     *   &lt;/complexContent>
+     * &lt;/complexType>
+     * </pre>
+     * 
+     * 
+     */
+    @XmlAccessorType(XmlAccessType.FIELD)
+    @XmlType(name = "", propOrder = {
+        "group"
+    })
+    public static class Groups {
+
+        @XmlElement(name = "Group", namespace = "http://javaops.ru", required = true)
+        protected List<Group> group;
+
+        /**
+         * Gets the value of the group property.
+         * 
+         * <p>
+         * This accessor method returns a reference to the live list,
+         * not a snapshot. Therefore any modification you make to the
+         * returned list will be present inside the JAXB object.
+         * This is why there is not a <CODE>set</CODE> method for the group property.
+         * 
+         * <p>
+         * For example, to add a new item, do as follows:
+         * <pre>
+         *    getGroup().add(newItem);
+         * </pre>
+         * 
+         * 
+         * <p>
+         * Objects of the following type(s) are allowed in the list
+         * {@link Group }
+         * 
+         * 
+         */
+        public List<Group> getGroup() {
+            if (group == null) {
+                group = new ArrayList<Group>();
+            }
+            return this.group;
         }
 
     }
