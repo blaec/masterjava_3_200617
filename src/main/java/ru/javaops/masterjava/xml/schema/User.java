@@ -23,7 +23,7 @@ import javax.xml.bind.annotation.XmlType;
  *       &lt;sequence>
  *         &lt;element name="fullName" type="{http://www.w3.org/2001/XMLSchema}string"/>
  *       &lt;/sequence>
- *       &lt;attribute name="email" use="required" type="{http://www.w3.org/2001/XMLSchema}string" />
+ *       &lt;attribute name="email" use="required" type="{http://javaops.ru}emailAddress" />
  *       &lt;attribute name="flag" use="required" type="{http://javaops.ru}flagType" />
  *       &lt;attribute name="city" use="required" type="{http://www.w3.org/2001/XMLSchema}IDREF" />
  *     &lt;/restriction>
