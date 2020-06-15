@@ -45,15 +45,24 @@
                 <xs:element type="xs:string" name="fullName"/>
             </xs:sequence>
             <xs:attribute type="emailAddress" name="email" use="required"/>
-            <xs:attribute type="flagType" name="flag" use="required"/>
             <xs:attribute type="xs:IDREF" name="city" use="required"/>
+            <xs:attribute type="flagType" name="flag" use="required"/>
+            <xs:attribute type="xs:IDREFS" name="group"/>
         </xs:complexType>
     </xs:element>
+
+    <xs:attribute name="eyecolor">
+        <xs:simpleType>
+            <xs:restriction base="xs:string">
+                <xs:pattern value="blue|brown|green|grey"/>
+            </xs:restriction>
+        </xs:simpleType>
+    </xs:attribute>
 
     <xs:element name="Group">
         <xs:complexType>
             <xs:attribute type="groupType" name="type" use="required"/>
-            <xs:attribute type="xs:string" name="id" use="required"/>
+            <xs:attribute type="xs:ID" name="id" use="required"/>
             <xs:attribute type="xs:IDREF" name="project" use="required"/>
         </xs:complexType>
     </xs:element>

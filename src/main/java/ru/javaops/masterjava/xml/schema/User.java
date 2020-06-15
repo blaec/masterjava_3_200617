@@ -1,6 +1,8 @@
 
 package ru.javaops.masterjava.xml.schema;
 
+import java.util.ArrayList;
+import java.util.List;
 import javax.xml.bind.annotation.XmlAccessType;
 import javax.xml.bind.annotation.XmlAccessorType;
 import javax.xml.bind.annotation.XmlAttribute;
@@ -24,8 +26,9 @@ import javax.xml.bind.annotation.XmlType;
  *         &lt;element name="fullName" type="{http://www.w3.org/2001/XMLSchema}string"/>
  *       &lt;/sequence>
  *       &lt;attribute name="email" use="required" type="{http://javaops.ru}emailAddress" />
- *       &lt;attribute name="flag" use="required" type="{http://javaops.ru}flagType" />
  *       &lt;attribute name="city" use="required" type="{http://www.w3.org/2001/XMLSchema}IDREF" />
+ *       &lt;attribute name="flag" use="required" type="{http://javaops.ru}flagType" />
+ *       &lt;attribute name="group" type="{http://www.w3.org/2001/XMLSchema}IDREFS" />
  *     &lt;/restriction>
  *   &lt;/complexContent>
  * &lt;/complexType>
@@ -44,12 +47,16 @@ public class User {
     protected String fullName;
     @XmlAttribute(name = "email", required = true)
     protected String email;
-    @XmlAttribute(name = "flag", required = true)
-    protected FlagType flag;
     @XmlAttribute(name = "city", required = true)
     @XmlIDREF
     @XmlSchemaType(name = "IDREF")
     protected Object city;
+    @XmlAttribute(name = "flag", required = true)
+    protected FlagType flag;
+    @XmlAttribute(name = "group")
+    @XmlIDREF
+    @XmlSchemaType(name = "IDREFS")
+    protected List<Object> group;
 
     /**
      * Gets the value of the fullName property.
@@ -100,6 +107,30 @@ public class User {
     }
 
     /**
+     * Gets the value of the city property.
+     * 
+     * @return
+     *     possible object is
+     *     {@link Object }
+     *     
+     */
+    public Object getCity() {
+        return city;
+    }
+
+    /**
+     * Sets the value of the city property.
+     * 
+     * @param value
+     *     allowed object is
+     *     {@link Object }
+     *     
+     */
+    public void setCity(Object value) {
+        this.city = value;
+    }
+
+    /**
      * Gets the value of the flag property.
      * 
      * @return
@@ -124,27 +155,32 @@ public class User {
     }
 
     /**
-     * Gets the value of the city property.
+     * Gets the value of the group property.
      * 
-     * @return
-     *     possible object is
-     *     {@link Object }
-     *     
-     */
-    public Object getCity() {
-        return city;
-    }
-
-    /**
-     * Sets the value of the city property.
+     * <p>
+     * This accessor method returns a reference to the live list,
+     * not a snapshot. Therefore any modification you make to the
+     * returned list will be present inside the JAXB object.
+     * This is why there is not a <CODE>set</CODE> method for the group property.
      * 
-     * @param value
-     *     allowed object is
-     *     {@link Object }
-     *     
+     * <p>
+     * For example, to add a new item, do as follows:
+     * <pre>
+     *    getGroup().add(newItem);
+     * </pre>
+     * 
+     * 
+     * <p>
+     * Objects of the following type(s) are allowed in the list
+     * {@link Object }
+     * 
+     * 
      */
-    public void setCity(Object value) {
-        this.city = value;
+    public List<Object> getGroup() {
+        if (group == null) {
+            group = new ArrayList<Object>();
+        }
+        return this.group;
     }
 
 }

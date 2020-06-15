@@ -8,12 +8,15 @@
         <User flag="superuser" city="spb" email="admin@javaops.ru">
             <fullName>Admin</fullName>
         </User>
-        <User flag="deleted" city="spb" email="mail@yandex.ru">
+        <User flag="deleted" city="spb" email="mail@yandex.ru" group="masterjava01 topjava07 topjava08">
             <fullName>Deleted</fullName>
         </User>
     </Users>
     <Groups>
         <Group id="masterjava01" project="mj" type="CURRENT"/>
+        <Group id="masterjava02" project="mj" type="REGISTERING"/>
+        <Group id="topjava07" project="tj" type="FINISHED"/>
+        <Group id="topjava08" project="tj" type="CURRENT"/>
     </Groups>
     <Cities>
         <City id="spb">Санкт-Петербург</City>
