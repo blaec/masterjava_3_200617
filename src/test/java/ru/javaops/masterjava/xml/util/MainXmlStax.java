@@ -9,7 +9,7 @@ import java.io.IOException;
 import java.util.Set;
 import java.util.TreeSet;
 
-public class MainXml {
+public class MainXmlStax {
     public static void main(String[] args) {
         String lookForProject = args[0];
         try (StaxStreamProcessor processor =
