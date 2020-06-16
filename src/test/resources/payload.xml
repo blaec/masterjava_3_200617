@@ -2,7 +2,7 @@
          xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
          xsi:schemaLocation="http://javaops.ru payload.xsd">
     <Users>
-        <User flag="active" city="kiv" email="gmail@gmail.com">
+        <User flag="active" city="kiv" email="gmail@gmail.com" group="topjava07 topjava08">
             <fullName>Full Name</fullName>
         </User>
         <User flag="superuser" city="spb" email="admin@javaops.ru">

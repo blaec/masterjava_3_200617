@@ -5,6 +5,7 @@ import javax.xml.stream.XMLStreamException;
 import javax.xml.stream.XMLStreamReader;
 import javax.xml.stream.events.XMLEvent;
 import java.io.InputStream;
+import java.util.stream.IntStream;
 
 public class StaxStreamProcessor implements AutoCloseable {
     private static final XMLInputFactory FACTORY = XMLInputFactory.newInstance();
@@ -41,6 +42,16 @@ public class StaxStreamProcessor implements AutoCloseable {
 
     public String getText() throws XMLStreamException {
         return reader.getElementText();
+    }
+
+    public String getAttributeValue(String attrName) {
+        String value = "";
+        for (int i = 0; i < reader.getAttributeCount(); i++) {
+            value = !reader.getAttributeLocalName(i).equals(attrName)
+                    ? ""
+                    : reader.getAttributeValue(i);
+        }
+        return value;
     }
 
     @Override
