@@ -30,13 +30,13 @@ public class MainXmlJaxb {
                     .sorted(Comparator.comparing(User::getFullName))
                     .collect(Collectors.toList());
             users.forEach(u -> System.out.println(u.getFullName()));
-            System.out.println(createHtmlTable(users.stream().map(User::getFullName).collect(Collectors.toList())));
+            System.out.println(createHtmlTable(users));
         } catch (JAXBException | IOException e) {
             e.printStackTrace();
         }
     }
 
-    public static String createHtmlTable(List<String> users) {
+    public static String createHtmlTable(List<User> users) {
         ContainerTag html =
                 html(
                         head(
@@ -48,13 +48,19 @@ public class MainXmlJaxb {
                                                 tr(
                                                         th(
                                                                 "Users"
+                                                        ),
+                                                        th(
+                                                                "Email"
                                                         )
                                                 )
                                         ),
                                         tbody(
-                                                each(users, i -> tr(
+                                                each(users, u -> tr(
                                                         td(
-                                                                i
+                                                                u.getFullName()
+                                                        ),
+                                                        td(
+                                                                u.getEmail()
                                                         ))
                                                 )
                                         )
