@@ -1,6 +1,8 @@
 package ru.javaops.masterjava.upload;
 
 import org.thymeleaf.context.WebContext;
+import ru.javaops.masterjava.persist.DBIProvider;
+import ru.javaops.masterjava.persist.dao.UserDao;
 import ru.javaops.masterjava.persist.model.User;
 
 import javax.servlet.ServletException;
@@ -40,6 +42,14 @@ public class UploadServlet extends HttpServlet {
             }
             try (InputStream is = filePart.getInputStream()) {
                 List<User> users = userProcessor.process(is);
+
+                // save users to db
+                UserDao dao = DBIProvider.getDao(UserDao.class);
+                DBIProvider.getDBI().useTransaction((conn, status) -> {
+                    users.forEach(dao::insert);
+                });
+
+                // send users to ui
                 webContext.setVariable("users", users);
                 engine.process("result", webContext, resp.getWriter());
             }
