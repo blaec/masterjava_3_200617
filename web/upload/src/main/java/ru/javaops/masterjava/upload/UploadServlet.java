@@ -46,7 +46,7 @@ public class UploadServlet extends HttpServlet {
                 // save users to db
                 UserDao dao = DBIProvider.getDao(UserDao.class);
                 DBIProvider.getDBI().useTransaction((conn, status) -> {
-                    users.forEach(dao::insert);
+                    dao.insertAll(users);
                 });
 
                 // send users to ui
