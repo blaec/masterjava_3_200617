@@ -22,7 +22,11 @@ public abstract class UserDao implements AbstractDao {
     }
 
     public int[] insertAll(List<User> users, int batchSize) {
-        return insertBatchl(users, batchSize);
+        return insertBatch(users, batchSize);
+    }
+
+    public List<User> getFirstUsersWithLimit(int limit) {
+        return getFirstWithLimit(limit);
     }
 
 
@@ -31,13 +35,16 @@ public abstract class UserDao implements AbstractDao {
     abstract int insertGeneratedId(@BindBean User user);
 
     @SqlBatch("INSERT INTO users (full_name, email, flag) VALUES (:fullName, :email, CAST(:flag AS user_flag)) ")
-    abstract int[] insertBatchl(@BindBean List<User> users, @BatchChunkSize int batchSize);
+    abstract int[] insertBatch(@BindBean List<User> users, @BatchChunkSize int batchSize);
 
     @SqlUpdate("INSERT INTO users (id, full_name, email, flag) VALUES (:id, :fullName, :email, CAST(:flag AS user_flag)) ")
     abstract void insertWitId(@BindBean User user);
 
     @SqlQuery("SELECT * FROM users ORDER BY full_name, email LIMIT :it")
     public abstract List<User> getWithLimit(@Bind int limit);
+
+    @SqlQuery("SELECT * FROM users ORDER BY id ASC LIMIT :it")
+    public abstract List<User> getFirstWithLimit(@Bind int limit);
 
     //   http://stackoverflow.com/questions/13223820/postgresql-delete-all-content
     @SqlUpdate("TRUNCATE users")

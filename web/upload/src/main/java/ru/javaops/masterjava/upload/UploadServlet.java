@@ -41,17 +41,17 @@ public class UploadServlet extends HttpServlet {
                 throw new IllegalStateException("Upload file have not been selected");
             }
             try (InputStream is = filePart.getInputStream()) {
-                List<User> users = userProcessor.process(is);
 
                 // save users to db
+                List<User> users = userProcessor.process(is);
                 int chunkSize = Integer.parseInt(req.getParameter("chunkSize"));
                 UserDao dao = DBIProvider.getDao(UserDao.class);
                 DBIProvider.getDBI().useTransaction((conn, status) -> {
                     int[] ids = dao.insertAll(users, chunkSize);
                 });
 
-                // send users to ui
-                webContext.setVariable("users", users);
+                // get 20 last users and display them
+                webContext.setVariable("users", dao.getFirstWithLimit(20));
                 engine.process("result", webContext, resp.getWriter());
             }
         } catch (Exception e) {
