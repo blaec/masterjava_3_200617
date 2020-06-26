@@ -6,7 +6,6 @@ import org.skife.jdbi.v2.sqlobject.customizers.BatchChunkSize;
 import org.skife.jdbi.v2.sqlobject.customizers.RegisterMapperFactory;
 import ru.javaops.masterjava.persist.model.User;
 
-import java.util.Iterator;
 import java.util.List;
 
 @RegisterMapperFactory(EntityMapperFactory.class)
