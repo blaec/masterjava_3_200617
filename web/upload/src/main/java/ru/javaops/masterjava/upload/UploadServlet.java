@@ -44,12 +44,10 @@ public class UploadServlet extends HttpServlet {
                 List<User> users = userProcessor.process(is);
 
                 // save users to db
-                // TODO bug if chunkSize % users.count == 0
-                // TODO validate chunkSize before sending it to db
                 int chunkSize = Integer.parseInt(req.getParameter("chunkSize"));
                 UserDao dao = DBIProvider.getDao(UserDao.class);
                 DBIProvider.getDBI().useTransaction((conn, status) -> {
-                    dao.insertAll(users, chunkSize);
+                    int[] ids = dao.insertAll(users, chunkSize);
                 });
 
                 // send users to ui

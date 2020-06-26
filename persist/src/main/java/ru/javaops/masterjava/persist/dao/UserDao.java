@@ -21,8 +21,8 @@ public abstract class UserDao implements AbstractDao {
         return user;
     }
 
-    public void insertAll(List<User> users, int batchSize) {
-        insertBatchl(users, batchSize);
+    public int[] insertAll(List<User> users, int batchSize) {
+        return insertBatchl(users, batchSize);
     }
 
 
@@ -31,8 +31,7 @@ public abstract class UserDao implements AbstractDao {
     abstract int insertGeneratedId(@BindBean User user);
 
     @SqlBatch("INSERT INTO users (full_name, email, flag) VALUES (:fullName, :email, CAST(:flag AS user_flag)) ")
-    @GetGeneratedKeys
-    abstract void insertBatchl(@BindBean List<User> users, @BatchChunkSize int batchSize);
+    abstract int[] insertBatchl(@BindBean List<User> users, @BatchChunkSize int batchSize);
 
     @SqlUpdate("INSERT INTO users (id, full_name, email, flag) VALUES (:id, :fullName, :email, CAST(:flag AS user_flag)) ")
     abstract void insertWitId(@BindBean User user);
