@@ -45,7 +45,7 @@ public class UploadServlet extends HttpServlet {
                 log.warn(message);
             } else {
                 try (InputStream is = filePart.getInputStream()) {
-                    webContext.setVariable("users", userProcessor.process(is, chunkSize));
+                    webContext.setVariable("batchResults", userProcessor.process(is, chunkSize));
                     engine.process("result", webContext, resp.getWriter());
                     return;
                 }
