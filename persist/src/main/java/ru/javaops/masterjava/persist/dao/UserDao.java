@@ -21,10 +21,6 @@ public abstract class UserDao implements AbstractDao {
         return user;
     }
 
-    public int[] insertAll(List<User> users, int batchSize) {
-        return insertBatch(users, batchSize);
-    }
-
     public List<User> getFirstUsersWithLimit(int limit) {
         return getFirstWithLimit(limit);
     }
@@ -35,7 +31,7 @@ public abstract class UserDao implements AbstractDao {
     abstract int insertGeneratedId(@BindBean User user);
 
     @SqlBatch("INSERT INTO users (full_name, email, flag) VALUES (:fullName, :email, CAST(:flag AS user_flag)) ON CONFLICT do nothing ")
-    abstract int[] insertBatch(@BindBean List<User> users, @BatchChunkSize int batchSize);
+    public abstract int[] insertBatch(@BindBean List<User> users, @BatchChunkSize int batchSize);
 
     @SqlUpdate("INSERT INTO users (id, full_name, email, flag) VALUES (:id, :fullName, :email, CAST(:flag AS user_flag)) ")
     abstract void insertWitId(@BindBean User user);
