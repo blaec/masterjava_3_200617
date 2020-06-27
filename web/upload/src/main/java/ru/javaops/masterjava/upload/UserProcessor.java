@@ -16,7 +16,6 @@ import javax.xml.stream.events.XMLEvent;
 import java.io.InputStream;
 import java.util.*;
 import java.util.concurrent.*;
-import java.util.stream.Collectors;
 
 public class UserProcessor {
     private static final JaxbParser jaxbParser = new JaxbParser(ObjectFactory.class);
@@ -25,60 +24,60 @@ public class UserProcessor {
 
     public List<BatchResult> process(final InputStream is, int chunkSize) throws XMLStreamException, JAXBException {
         final StaxStreamProcessor processor = new StaxStreamProcessor(is);
-        List<User> users = new ArrayList<>();
-        Map<String, List<User>> userChunks = new HashMap<>();
         final CompletionService<String> completionService = new ExecutorCompletionService<>(userExecutor);
+        List<Future<String>> futureList = new ArrayList<>();
 
         JaxbUnmarshaller unmarshaller = jaxbParser.createUnmarshaller();
+        List<User> users = new ArrayList<>();
         while (processor.doUntil(XMLEvent.START_ELEMENT, "User")) {
             ru.javaops.masterjava.xml.schema.User xmlUser = unmarshaller.unmarshal(processor.getReader(), ru.javaops.masterjava.xml.schema.User.class);
             final User user = new User(xmlUser.getValue(), xmlUser.getEmail(), UserFlag.valueOf(xmlUser.getFlag().value()));
             users.add(user);
             if (users.size() == chunkSize) {
-                String key = String.format("%s-%s", users.get(0).getEmail(), user.getEmail());
-                userChunks.put(key, users);
+                futureList.add(createFuture(completionService, users, chunkSize));
                 users = new ArrayList<>();
             }
         }
         if (users.size() > 0) {
-            String key = String.format("%s-%s", users.get(0).getEmail(), users.get(users.size() - 1).getEmail());
-            userChunks.put(key, users);
-        }
-
-        List<Future<String>> futureList = new ArrayList<>();
-        for (String key : userChunks.keySet()) {
-            Future<String> failedChunk = completionService.submit(() -> {
-                List<User> userList = userChunks.get(key);
-                int[] ids = dao.insertBatch(userList, chunkSize);
-                List<User> failedUsers = new ArrayList<>();
-                for (int i = 0; i < ids.length; i++) {
-                    if (ids[i] == 0) {
-                        failedUsers.add(userList.get(i));
-                    }
-                }
-                return String.format("%s-%s", failedUsers.get(0).getEmail(), failedUsers.get(failedUsers.size() - 1).getEmail());
-            });
-            futureList.add(failedChunk);
+            futureList.add(createFuture(completionService, users, chunkSize));
         }
 
         List<BatchResult> result = new ArrayList<>();
         while (!futureList.isEmpty()) {
+            BatchResult batchResult = null;
             try {
-                Future<String> future = completionService.poll(10, TimeUnit.SECONDS);
-                if (future == null) {
-                    continue;
+                Future<String> future;
+                if ((future = completionService.poll(10, TimeUnit.SECONDS)) != null) {
+                    futureList.remove(future);
+                    batchResult = new BatchResult(future.get(), "Unique email constraint violation");
                 }
-                futureList.remove(future);
-                String failedUsers = future.get();
-                BatchResult batchResult = new BatchResult(failedUsers, "Unique email constraint violation");
+            } catch (InterruptedException e) {
+                batchResult = new BatchResult("InterruptedException", e.getMessage());
+            } catch (ExecutionException e) {
+                batchResult = new BatchResult("ExecutionException", e.getMessage());
+            }
+            if (batchResult != null) {
                 result.add(batchResult);
-            } catch (InterruptedException | ExecutionException e) {
-                e.printStackTrace();
             }
         }
 
         return result;
     }
 
+    private Future<String> createFuture(CompletionService<String> completionService, List<User> users, int chunkSize) {
+        return completionService.submit(() -> {
+            int[] ids = dao.insertBatch(users, chunkSize);
+            List<User> failedUsers = new ArrayList<>();
+            for (int i = 0; i < ids.length; i++) {
+                if (ids[i] == 0) {
+                    failedUsers.add(users.get(i));
+                }
+            }
+            return getEmailRange(failedUsers);
+        });
+    }
 
+    private String getEmailRange(List<User> users) {
+        return String.format("%s-%s", users.get(0).getEmail(), users.get(users.size() - 1).getEmail());
+    }
 }
