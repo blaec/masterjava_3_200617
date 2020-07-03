@@ -42,7 +42,7 @@ public class User {
     @XmlAttribute(name = "city", required = true)
     @XmlIDREF
     @XmlSchemaType(name = "IDREF")
-    protected Object city;
+    protected CityType city;
     @XmlAttribute(name = "groupRefs")
     @XmlIDREF
     @XmlSchemaType(name = "IDREFS")
@@ -128,7 +128,7 @@ public class User {
      *     {@link Object }
      *     
      */
-    public Object getCity() {
+    public CityType getCity() {
         return city;
     }
 
@@ -140,7 +140,7 @@ public class User {
      *     {@link Object }
      *     
      */
-    public void setCity(Object value) {
+    public void setCity(CityType value) {
         this.city = value;
     }
 

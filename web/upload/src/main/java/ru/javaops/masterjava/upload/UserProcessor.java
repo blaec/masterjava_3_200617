@@ -26,6 +26,7 @@ import java.util.concurrent.ExecutionException;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.Future;
+import java.util.stream.Collectors;
 
 @Slf4j
 public class UserProcessor {
@@ -69,9 +70,17 @@ public class UserProcessor {
         }
         cityDao.insertBatch(cities, chunkSize);
 
+        List<String> cityIds = cityDao.getCities().stream()
+                .map(City::getId)
+                .collect(Collectors.toList());
         while (processor.doUntil(XMLEvent.START_ELEMENT, "User")) {
+            String city = processor.getAttribute("city");
+            if (!cityIds.contains(city)) {
+                throw new IllegalArgumentException(String.format("City id %s is not exist in db", city));
+            }
+
             ru.javaops.masterjava.xml.schema.User xmlUser = unmarshaller.unmarshal(processor.getReader(), ru.javaops.masterjava.xml.schema.User.class);
-            final User user = new User(id++, xmlUser.getValue(), xmlUser.getEmail(), UserFlag.valueOf(xmlUser.getFlag().value()));
+            final User user = new User(id++, city, xmlUser.getValue(), xmlUser.getEmail(), UserFlag.valueOf(xmlUser.getFlag().value()));
             chunk.add(user);
             if (chunk.size() == chunkSize) {
                 addChunkFutures(chunkFutures, chunk);

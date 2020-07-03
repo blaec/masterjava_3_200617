@@ -11,7 +11,7 @@ import java.util.List;
 @RegisterMapperFactory(EntityMapperFactory.class)
 public abstract class CityDao implements AbstractDao {
 
-    @SqlUpdate("TRUNCATE cities")
+    @SqlUpdate("TRUNCATE users, cities")
     @Override
     public abstract void clean();
 
@@ -23,4 +23,7 @@ public abstract class CityDao implements AbstractDao {
 
     @SqlQuery("SELECT * FROM cities ORDER BY name LIMIT :it")
     public abstract List<City> getWithLimit(@Bind int limit);
+
+    @SqlQuery("SELECT * FROM cities ORDER BY name")
+    public abstract List<City> getCities();
 }
