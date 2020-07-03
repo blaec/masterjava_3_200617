@@ -10,5 +10,5 @@ import lombok.RequiredArgsConstructor;
 @NoArgsConstructor
 public class Group {
     private @NonNull String id;
-    private @NonNull GroupType groupType;
+    private @NonNull GroupType type;
 }
