@@ -14,4 +14,11 @@ import lombok.NoArgsConstructor;
 public class Addressee {
     private String email;
     private String name;
+
+    @Override
+    public String toString() {
+        return name == null
+                ? email
+                : String.format("%s <%s>", name, email);
+    }
 }
