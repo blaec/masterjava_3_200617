@@ -32,3 +32,12 @@ CREATE TABLE user_group (
   group_id INTEGER NOT NULL REFERENCES groups (id),
   CONSTRAINT users_group_idx UNIQUE (user_id, group_id)
 );
+
+--changeset Constantine:3
+CREATE TABLE sent_emails (
+  id          INTEGER PRIMARY KEY DEFAULT nextval('common_seq'),
+  date        TIMESTAMP NOT NULL,
+  result      TEXT NOT NULL,
+  emails      TEXT NOT NULL
+);
+--rollback drop table sent_emails;
