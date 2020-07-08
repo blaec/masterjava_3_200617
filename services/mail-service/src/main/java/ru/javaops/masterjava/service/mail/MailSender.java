@@ -11,10 +11,7 @@ import ru.javaops.masterjava.service.model.SentMailResult;
 
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
-import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
-import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 
@@ -25,11 +22,9 @@ public class MailSender {
         String emailLog = String.format("'%s' cc '%s' subject '%s'%s",
                 to, cc, subject, (log.isDebugEnabled() ? String.format("\nbody=%s", body) : ""));
         String result;
-        List<String> toEmails = new ArrayList<>();
-        List<String> ccEmails = new ArrayList<>();
+        List<String> toEmails = listToEmailsArray(to);
+        List<String> ccEmails = listToEmailsArray(cc);
         try {
-            toEmails = listToEmailsArray(to);
-            ccEmails = listToEmailsArray(cc);
             getSimpleEmail(toEmails, ccEmails, subject, body).send();
             log.info(String.format("E-mail sent to %s", emailLog));
             result = "success";
@@ -64,15 +59,11 @@ public class MailSender {
     }
 
     private static List<String> listToEmailsArray(List<Addressee> list) {
-        List<String> result = new ArrayList<>();
         Pattern pattern = Pattern.compile("^(.+)@(.+)$");
-        for (Addressee addressee : list) {
-            Matcher matcher = pattern.matcher(addressee.getEmail());
-            if (matcher.matches()) {
-                result.add(addressee.toString());
-            }
-        }
-        return result;
+        return list.stream()
+                .filter(a -> pattern.matcher(a.getEmail()).matches())
+                .map(Addressee::toString)
+                .collect(Collectors.toList());
     }
 
     private static String[] listToArray(List<String> input) {
