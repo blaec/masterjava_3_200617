@@ -11,17 +11,16 @@ import ru.javaops.masterjava.persist.model.type.GroupType;
 import ru.javaops.masterjava.xml.util.StaxStreamProcessor;
 
 import javax.xml.stream.XMLStreamException;
+import java.util.Map;
 
 @Slf4j
-public class ProjectProcessor {
+public class GroupProcessor {
     private final ProjectDao projectDao = DBIProvider.getDao(ProjectDao.class);
     private final GroupDao groupDao = DBIProvider.getDao(GroupDao.class);
 
-    public void process(StaxStreamProcessor processor) throws XMLStreamException {
+    public Map<String, Group> process(StaxStreamProcessor processor) throws XMLStreamException {
         val existingProjects = projectDao.getAsMap();
         val existingGroups = groupDao.getAsMap();
-//        val newProjects = new ArrayList<Project>();
-//        val newGroups = new ArrayList<Group>();
 
 
         while (processor.startElement("Project", "Projects")) {
@@ -29,30 +28,17 @@ public class ProjectProcessor {
             Project project;
             if ((project = existingProjects.get(projectName)) == null) {
                 project = new Project(projectName, processor.getElementValue("description"));
-//                newProjects.add(project);
                 projectDao.insert(project);
             }
             while (processor.startElement("Group", "Project")) {
                 String groupName = processor.getAttribute("name");
                 if (!existingGroups.containsKey(groupName)) {
                     Group group = new Group(groupName, GroupType.valueOf(processor.getAttribute("type")), project.getId());
-//                    newGroups.add(group);
                     groupDao.insert(group);
                 }
             }
         }
-//        if (groupNames.isEmpty()) {
-//            throw new IllegalArgumentException("Invalid " + projectName + " or no groups");
-//        }
-//
-//        while (processor.startElement("City", "Cities")) {
-//            val ref = processor.getAttribute("id");
-//            if (!map.containsKey(ref)) {
-//                newCities.add(new City(ref, processor.getText()));
-//            }
-//        }
-//        log.info("Insert batch " + newCities);
-//        cityDao.insertBatch(newCities);
-//        return cityDao.getAsMap();
+
+        return groupDao.getAsMap();
     }
 }

@@ -1,10 +1,12 @@
 package ru.javaops.masterjava.upload;
 
+import com.google.common.base.Splitter;
 import lombok.extern.slf4j.Slf4j;
 import lombok.val;
 import ru.javaops.masterjava.persist.DBIProvider;
 import ru.javaops.masterjava.persist.dao.UserDao;
 import ru.javaops.masterjava.persist.model.City;
+import ru.javaops.masterjava.persist.model.Group;
 import ru.javaops.masterjava.persist.model.User;
 import ru.javaops.masterjava.persist.model.type.UserFlag;
 import ru.javaops.masterjava.upload.PayloadProcessor.FailedEmails;
@@ -15,14 +17,13 @@ import ru.javaops.masterjava.xml.util.StaxStreamProcessor;
 import javax.xml.bind.JAXBException;
 import javax.xml.stream.XMLStreamException;
 import javax.xml.stream.events.XMLEvent;
-import java.util.ArrayList;
-import java.util.LinkedHashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.Future;
+
+import static com.google.common.base.Strings.nullToEmpty;
 
 @Slf4j
 public class UserProcessor {
@@ -36,7 +37,7 @@ public class UserProcessor {
     /*
      * return failed users chunks
      */
-    public List<FailedEmails> process(final StaxStreamProcessor processor, Map<String, City> cities, int chunkSize) throws XMLStreamException, JAXBException {
+    public List<FailedEmails> process(final StaxStreamProcessor processor, Map<String, City> cities, Map<String, Group> groups, int chunkSize) throws XMLStreamException, JAXBException {
         log.info("Start processing with chunkSize=" + chunkSize);
 
         Map<String, Future<List<String>>> chunkFutures = new LinkedHashMap<>();  // ordered map (emailRange -> chunk future)
@@ -48,9 +49,16 @@ public class UserProcessor {
 
         while (processor.doUntil(XMLEvent.START_ELEMENT, "User")) {
             String cityRef = processor.getAttribute("city");  // unmarshal doesn't get city ref
+            String groupRefs = processor.getAttribute("groupRefs");  // unmarshal doesn't get city ref
             ru.javaops.masterjava.xml.schema.User xmlUser = unmarshaller.unmarshal(processor.getReader(), ru.javaops.masterjava.xml.schema.User.class);
-            if (cities.get(cityRef) == null) {
-                failed.add(new FailedEmails(xmlUser.getEmail(), "City '" + cityRef + "' is not present in DB"));
+            boolean cityMissing = cities.get(cityRef) == null;
+            boolean groupMissing = groupRefs != null && Splitter.on(' ').splitToList(nullToEmpty(groupRefs)).stream()
+                    .anyMatch(key -> !groups.containsKey(key));
+            if (cityMissing || groupMissing) {
+                String cityMessage = String.format("City '%s' is not present in DB", cityRef);
+                if (cityMissing) failed.add(new FailedEmails(xmlUser.getEmail(), cityMessage));
+                String groupMessage = String.format("One or more groups from groupRef '%s' is not present in DB", groupRefs);
+                if (groupMissing) failed.add(new FailedEmails(xmlUser.getEmail(), groupMessage));
             } else {
                 final User user = new User(id++, xmlUser.getValue(), xmlUser.getEmail(), UserFlag.valueOf(xmlUser.getFlag().value()), cityRef);
                 chunk.add(user);
