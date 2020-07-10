@@ -24,8 +24,9 @@
         <User flag="active" city="kiv" email="gmail@gmail.com" groupRefs="topjava07 masterjava01 masterjava03">Full Name</User>
         <User flag="superuser" city="spb" email="admin@javaops.ru" groupRefs="topjava07 topjava08 masterjava01">Admin</User>
         <User flag="deleted" city="bad1" email="deleted@yandex.ru">Deleted</User>
+        <User flag="deleted" city="mow" email="erased@yandex.ru">Erased</User>
         <User flag="active" city="mow" email="user1@gmail.com" groupRefs="masterjava01 topjava06">User1</User>
         <User flag="active" city="bad2" email="user2@yandex.ru" groupRefs="masterjava01">User2</User>
-        <User flag="active" city="mnsk" email="user3@yandex.ru" groupRefs="masterjava01">User3</User>
+        <User flag="active" city="mnsk" email="user3@yandex.ru" groupRefs="topjava07 topjava08 masterjava01">User3</User>
     </Users>
 </Payload>

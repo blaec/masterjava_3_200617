@@ -5,9 +5,11 @@ import lombok.extern.slf4j.Slf4j;
 import lombok.val;
 import ru.javaops.masterjava.persist.DBIProvider;
 import ru.javaops.masterjava.persist.dao.UserDao;
+import ru.javaops.masterjava.persist.dao.UserGroupDao;
 import ru.javaops.masterjava.persist.model.City;
 import ru.javaops.masterjava.persist.model.Group;
 import ru.javaops.masterjava.persist.model.User;
+import ru.javaops.masterjava.persist.model.UserGroup;
 import ru.javaops.masterjava.persist.model.type.UserFlag;
 import ru.javaops.masterjava.upload.PayloadProcessor.FailedEmails;
 import ru.javaops.masterjava.xml.schema.ObjectFactory;
@@ -22,6 +24,7 @@ import java.util.concurrent.ExecutionException;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.Future;
+import java.util.stream.Collectors;
 
 import static com.google.common.base.Strings.nullToEmpty;
 
@@ -31,6 +34,7 @@ public class UserProcessor {
 
     private static final JaxbParser jaxbParser = new JaxbParser(ObjectFactory.class);
     private static UserDao userDao = DBIProvider.getDao(UserDao.class);
+    private static UserGroupDao userGroupDao = DBIProvider.getDao(UserGroupDao.class);
 
     private ExecutorService executorService = Executors.newFixedThreadPool(NUMBER_THREADS);
 
@@ -44,6 +48,7 @@ public class UserProcessor {
 
         int id = userDao.getSeqAndSkip(chunkSize);
         List<User> chunk = new ArrayList<>(chunkSize);
+        List<UserGroup> userGroups = new ArrayList<>();
         val unmarshaller = jaxbParser.createUnmarshaller();
         List<FailedEmails> failed = new ArrayList<>();
 
@@ -67,6 +72,11 @@ public class UserProcessor {
                     chunk = new ArrayList<>(chunkSize);
                     id = userDao.getSeqAndSkip(chunkSize);
                 }
+
+                userGroups.addAll(Splitter.on(' ').splitToList(nullToEmpty(groupRefs)).stream()
+                        .filter(g -> !g.isEmpty())
+                        .map(g -> new UserGroup(user.getId(), groups.get(g).getId()))
+                        .collect(Collectors.toList()));
             }
         }
 
@@ -88,7 +98,40 @@ public class UserProcessor {
         if (!allAlreadyPresents.isEmpty()) {
             failed.add(new FailedEmails(allAlreadyPresents.toString(), "already presents"));
         }
+
+        // save user groups
+        Map<String, Future<?>> userGroupChunkFutures = new LinkedHashMap<>();
+        List<UserGroup> userGroupChunk = new ArrayList<>(chunkSize);
+        int counter = 0;
+        for (UserGroup userGroup : userGroups) {
+            userGroupChunk.add(userGroup);
+            if (userGroupChunk.size() == chunkSize) {
+                counter++;
+                addUserGroupChunkFutures(userGroupChunkFutures, userGroupChunk, counter);
+                userGroupChunk = new ArrayList<>(chunkSize);
+            }
+        }
+        if (!userGroupChunk.isEmpty()) {
+            counter++;
+            addUserGroupChunkFutures(userGroupChunkFutures, userGroupChunk, counter);
+        }
+        userGroupChunkFutures.forEach((chunkId, future) -> {
+            try {
+                future.get();
+                log.info("user groups from chank {} were successfully saved", chunkId);
+            } catch (InterruptedException | ExecutionException e) {
+                log.error("failed to save user groups", e);
+            }
+        });
+
         return failed;
+    }
+
+    private void addUserGroupChunkFutures(Map<String, Future<?>> userGroupChunkFutures, List<UserGroup> userGroupChunk, int counter) {
+        String chankId = String.format("chunk #%d", counter);
+        Future<?> future = executorService.submit(() -> userGroupDao.insertBatch(userGroupChunk));
+        userGroupChunkFutures.put(chankId, future);
+        log.info("Submit chunk: {}", chankId);
     }
 
     private void addChunkFutures(Map<String, Future<List<String>>> chunkFutures, List<User> chunk) {
