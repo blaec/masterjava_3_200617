@@ -11,6 +11,34 @@
         <version>1.0-SNAPSHOT</version>
     </parent>
 
+    <build>
+        <plugins>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-resources-plugin</artifactId>
+                <version>2.4.2</version>
+                <executions>
+                    <execution>
+                        <id>default-copy-resources</id>
+                        <phase>process-resources</phase>
+                        <goals>
+                            <goal>copy-resources</goal>
+                        </goals>
+                        <configuration>
+                            <overwrite>false</overwrite>
+                            <outputDirectory>${project.basedir}/src/test/resources/wsdl</outputDirectory>
+                            <resources>
+                                <resource>
+                                    <directory>C:${masterjava.config}wsdl</directory>
+                                </resource>
+                            </resources>
+                        </configuration>
+                    </execution>
+                </executions>
+            </plugin>
+        </plugins>
+    </build>
+
     <artifactId>mail-api</artifactId>
     <version>1.0-SNAPSHOT</version>
     <name>Mail API</name>
