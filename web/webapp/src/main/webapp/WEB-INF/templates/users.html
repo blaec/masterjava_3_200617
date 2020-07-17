@@ -2,26 +2,95 @@
 <head>
     <meta charset="UTF-8">
     <title>Users</title>
+    <style>
+        input[type=submit] {
+            width: 30%;
+            background-color: #4CAF50;
+            color: white;
+            padding: 14px 20px;
+            margin: 8px 0;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+        }
+
+        input[type=text], textarea {
+            width: 30%;
+            padding: 12px 20px;
+            margin: 8px 0;
+        }
+
+        form {
+            border-radius: 5px;
+            padding: 20px 0;
+        }
+
+        table {
+            font-family: "Trebuchet MS", Arial, Helvetica, sans-serif;
+            border-collapse: collapse;
+            width: 30%;
+        }
+
+        td, th {
+            border: 1px solid #ddd;
+            padding: 8px;
+        }
+
+        tr:nth-child(even) {
+            background-color: #f2f2f2;
+        }
+
+        tr:hover {
+            background-color: #ddd;
+        }
+
+        th {
+            padding-top: 12px;
+            padding-bottom: 12px;
+            text-align: left;
+            background-color: #4CAF50;
+            color: white;
+        }
+    </style>
 </head>
 <body>
-<table border="1" cellpadding="8" cellspacing="0">
-    <thead>
-    <tr>
-        <th>#</th>
-        <th>Full Name</th>
-        <th>Email</th>
-        <th>Flag</th>
-    </tr>
-    </thead>
-    <tbody>
-    <!--/*@thymesVar id="users" type="java.util.List<ru.javaops.masterjava.persist.model.User>"*/-->
-    <tr th:each="user,iter: ${users}">
-        <td th:text="${iter.count}"></td>
-        <td th:text="${user.fullName}"></td>
-        <td th:utext="${user.email}"></td>
-        <td th:text="${user.flag}"></td>
-    </tr>
-    </tbody>
-</table>
+<form action="" method="post">
+    <table>
+        <thead>
+        <tr>
+            <th>#</th>
+            <th>Full Name</th>
+            <th>Email</th>
+            <th>Flag</th>
+        </tr>
+        </thead>
+        <tbody>
+        <!--/*@thymesVar id="users" type="java.util.List<ru.javaops.masterjava.persist.model.User>"*/-->
+        <tr th:each="user,iter: ${users}">
+            <td th:text="${iter.count}"></td>
+            <td>
+                <input type="checkbox"
+                       name="toList"
+                       th:value="${user.id}"
+                       th:text="${user.fullName}">
+            </td>
+            <td th:utext="${user.email}"></td>
+            <td th:text="${user.flag}"></td>
+        </tr>
+        </tbody>
+    </table>
+    <label for="subject">Subject:</label><br>
+    <input id="subject"
+           name="subject"
+           type="text"
+           placeholder="e-mail subject"
+           required><br>
+    <textarea name="body"
+              rows="10"
+              cols="30"
+              placeholder="e-mail body"
+              required></textarea><br>
+    <input type="submit" value="Submit">
+</form>
 </body>
 </html>
