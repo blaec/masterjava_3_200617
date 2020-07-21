@@ -2,6 +2,66 @@
 <head>
     <meta charset="UTF-8">
     <title>Users</title>
+    <style>
+        ::-webkit-file-upload-button {
+            background: #40379c;
+            color: white;
+            padding: 1em;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+        }
+
+        input[type=submit] {
+            width: 15%;
+            background-color: #4caf50;
+            color: white;
+            padding: 14px 20px;
+            margin: 8px 8px 8px 0;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+        }
+
+        input[type=text], textarea {
+            width: 30%;
+            padding: 12px 20px;
+            margin: 8px 0;
+        }
+
+        form {
+            border-radius: 5px;
+            padding: 20px 0;
+        }
+
+        table {
+            font-family: "Trebuchet MS", Arial, Helvetica, sans-serif;
+            border-collapse: collapse;
+            width: 30%;
+            margin-bottom: 25px;
+        }
+
+        td, th {
+            border: 1px solid #ddd;
+            padding: 8px;
+        }
+
+        tr:nth-child(even) {
+            background-color: #f2f2f2;
+        }
+
+        tr:hover {
+            background-color: #ddd;
+        }
+
+        th {
+            padding-top: 12px;
+            padding-bottom: 12px;
+            text-align: left;
+            background-color: #4CAF50;
+            color: white;
+        }
+    </style>
 </head>
 <!--https://code.jquery.com/-->
 <!--http://stackoverflow.com/a/24070373/548473-->
@@ -10,8 +70,8 @@
         crossorigin="anonymous" async>
 </script>
 <body>
-<section>
-    <table border="1" cellpadding="8" cellspacing="0">
+<form action="send" method="post" enctype="multipart/form-data">
+    <table>
         <thead>
         <tr>
             <th>#</th>
@@ -28,37 +88,17 @@
             <td th:text="${user.fullName}"></td>
             <td th:utext="${user.email}"></td>
             <td th:text="${user.flag}"></td>
-            <td><input type="checkbox" th:value="|${user.fullName} <${user.email}>|"/></td>
+            <td><input type="checkbox" name="users" th:value="|${user.fullName} <${user.email}>|"/></td>
         </tr>
         </tbody>
     </table>
-    <hr/>
-    <p>
-        <input id="subject" placeholder="subject" size="30">
-    </p>
-    <p>
-        <textarea id="body" placeholder="mail body" cols=75 rows=5></textarea><br/>
-    </p>
-    <p>
-        <button type="button" onclick="send()">Send</button>
-    </p>
+    <div><input id="subject" name="subject" type="text" placeholder="subject" size="30"></div>
+    <div><textarea id="body" name="body" placeholder="mail body" cols=75 rows=5></textarea></div>
+    <div>
+        <input type="submit" name="submit" value="Send"/>
+        <input id="file" type="file" name="fileToUpload" value="Attach"/>
+    </div>
     <pre id="result"></pre>
-</section>
-<script type="text/javascript">
-    function send() {
-        $('#result').html("Sending ...");
-        var users = $("input:checkbox:checked").map(function () {
-            return this.value;
-        }).get();
-//        https://stackoverflow.com/a/22213543/548473
-        $.post("send", "users=" + users + "&subject=" + $("#subject").val() + "&body=" + $("#body").val())
-            .done(function (result) {
-                $('#result').html(result);
-            })
-            .fail(function (result) {
-                $('#result').html(result);
-            });
-    }
-</script>
+</form>
 </body>
 </html>
