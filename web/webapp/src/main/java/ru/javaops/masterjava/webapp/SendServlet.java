@@ -1,5 +1,6 @@
 package ru.javaops.masterjava.webapp;
 
+import com.google.common.collect.ImmutableList;
 import com.google.common.collect.ImmutableSet;
 import lombok.extern.slf4j.Slf4j;
 import ru.javaops.masterjava.service.mail.Attachment;
@@ -15,6 +16,7 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
     import javax.servlet.http.Part;
 import java.io.IOException;
+import java.util.List;
 
 @WebServlet("/send")
 @MultipartConfig(fileSizeThreshold = 1024 * 1024 * 10) //10 MB in memory limit
@@ -31,8 +33,8 @@ public class SendServlet extends HttpServlet {
             String subject = req.getParameter("subject");
             String body = req.getParameter("body");
             Part filePart = req.getPart("fileToUpload");
-            ImmutableSet<Attachment> attachments = ImmutableSet.of(Attachments.getAttachment(filePart.getName(), filePart.getInputStream()));
-            GroupResult groupResult = MailWSClient.sendBulk(MailWSClient.split(users), subject, body);
+            List<Attachment> attachments = ImmutableList.of(Attachments.getAttachment(filePart.getName(), filePart.getInputStream()));
+            GroupResult groupResult = MailWSClient.sendBulk(MailWSClient.split(users), subject, body, attachments);
             result = groupResult.toString();
             log.info("Processing finished with result: {}", result);
         } catch (Exception e) {
