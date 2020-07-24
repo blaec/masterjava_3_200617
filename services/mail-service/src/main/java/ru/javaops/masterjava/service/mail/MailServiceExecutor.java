@@ -34,7 +34,7 @@ public class MailServiceExecutor {
             public GroupResult call() throws WebStateException {
                 while (!futures.isEmpty()) {
                     try {
-                        Future<MailResult> future = completionService.poll(10, TimeUnit.SECONDS);
+                        Future<MailResult> future = completionService.poll(30, TimeUnit.SECONDS);
                         if (future == null) {
                             cancel(INTERRUPTED_BY_TIMEOUT, null);
                         }
