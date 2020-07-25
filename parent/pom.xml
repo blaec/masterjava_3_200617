@@ -117,10 +117,10 @@
     </dependencyManagement>
 
     <scm>
-        <connection>scm:git:https://github.com/JavaWebinar/masterjava.git</connection>
-        <developerConnection>scm:git:https://github.com/JavaWebinar/masterjava.git</developerConnection>
+        <connection>scm:git:https://github.com/blaec/masterjava_3_200617.git</connection>
+        <developerConnection>scm:git:https://github.com/blaec/masterjava_3_200617.git</developerConnection>
         <tag>HEAD</tag>
-        <url>https://github.com/vitchurb/masterjava.git</url>
+        <url>https://github.com/blaec/masterjava_3_200617.git</url>
     </scm>
 
 </project>
