@@ -22,7 +22,7 @@ public class WsClient<T> {
     private String endpointAddress;
 
     static {
-        HOSTS = Configs.getConfig("hosts.conf", "hosts");
+        HOSTS = Configs.getConfig("hosts.conf", "hosts.mail");
     }
 
     public WsClient(URL wsdlUrl, QName qname, Class<T> serviceClass) {
