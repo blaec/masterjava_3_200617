@@ -36,6 +36,9 @@ public class MailSender {
             for (Addressee addressee : cc) {
                 email.addCc(addressee.getEmail(), addressee.getName());
             }
+            for (Attachment attachment : attachments) {
+                email.attach(attachment.getDataHandler().getDataSource(), attachment.getName(), null);
+            }
 
             //  https://yandex.ru/blog/company/66296
             email.setHeaders(ImmutableMap.of("List-Unsubscribe", "<mailto:masterjava@javaops.ru?subject=Unsubscribe&body=Unsubscribe>"));
