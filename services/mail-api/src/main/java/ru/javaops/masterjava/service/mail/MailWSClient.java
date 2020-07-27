@@ -10,6 +10,7 @@ import ru.javaops.masterjava.web.AuthUtil;
 import ru.javaops.masterjava.web.WebStateException;
 import ru.javaops.masterjava.web.WsClient;
 import ru.javaops.masterjava.web.handler.SoapLoggingHandlers;
+import ru.javaops.masterjava.web.handler.SoapServerSecurityHandler;
 import ru.javaops.masterjava.web.handler.SoapStatisticsHandlers;
 
 import javax.xml.namespace.QName;
@@ -22,10 +23,12 @@ import java.util.Set;
     private static final WsClient<MailService> WS_CLIENT;
     public static final String USER = "user";
     public static final String PASSWORD = "password";
+    public static String AUTH_HEADER = AuthUtil.encodeBasicAuthHeader(USER, PASSWORD);
+
     private static final SoapLoggingHandlers.ClientHandler LOGGING_HANDLER = new SoapLoggingHandlers.ClientHandler(Level.DEBUG);
     private static final SoapStatisticsHandlers.ClientHandler STATISTICS_HANDLER = new SoapStatisticsHandlers.ClientHandler(System.currentTimeMillis());
+    private static final SoapServerSecurityHandler.ClientHandler SECURITY_HANDLER = new SoapServerSecurityHandler.ClientHandler(AUTH_HEADER);
 
-    public static String AUTH_HEADER = AuthUtil.encodeBasicAuthHeader(USER, PASSWORD);
 
     static {
         WS_CLIENT = new WsClient<>(Resources.getResource("wsdl/mailService.wsdl"),
@@ -55,6 +58,7 @@ import java.util.Set;
         WsClient.setAuth(port, USER, PASSWORD);
         WsClient.setHandler(port, LOGGING_HANDLER);
         WsClient.setHandler(port, STATISTICS_HANDLER);
+        WsClient.setHandler(port, SECURITY_HANDLER);
         return port;
     }
 

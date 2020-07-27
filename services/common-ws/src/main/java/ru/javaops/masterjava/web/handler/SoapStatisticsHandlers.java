@@ -12,15 +12,19 @@ public abstract class SoapStatisticsHandlers extends SoapBaseHandler {
 
     @Override
     public boolean handleMessage(MessageHandlerContext context) {
-        Statistics.count(isRequest(isOutbound(context)) ? "SOAP request: " : "SOAP response: " + context.getMessage().getPayloadLocalPart(),
-                startTime, Statistics.RESULT.SUCCESS);
+        String payload = String.format("%s %s",
+                isRequest(isOutbound(context)) ? "SOAP request:" : "SOAP response:",
+                context.getMessage().getPayloadLocalPart());
+        Statistics.count(payload, startTime, Statistics.RESULT.SUCCESS);
         return true;
     }
 
     @Override
     public boolean handleFault(MessageHandlerContext context) {
-        Statistics.count(isRequest(isOutbound(context)) ? "SOAP request: " : "SOAP response: " + context.getMessage().getPayloadLocalPart(),
-                startTime, Statistics.RESULT.FAIL);
+        String payload = String.format("%s %s",
+                isRequest(isOutbound(context)) ? "SOAP request:" : "SOAP response:",
+                context.getMessage().getPayloadLocalPart());
+        Statistics.count(payload, startTime, Statistics.RESULT.FAIL);
         return true;
     }
 
