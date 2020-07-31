@@ -7,6 +7,7 @@ import com.sun.xml.ws.api.message.Message;
 import com.sun.xml.ws.api.streaming.XMLStreamWriterFactory;
 import lombok.extern.slf4j.Slf4j;
 import org.slf4j.event.Level;
+import ru.javaops.masterjava.web.WsClient;
 
 import javax.xml.stream.XMLStreamWriter;
 import java.io.ByteArrayOutputStream;
@@ -132,7 +133,7 @@ public abstract class SoapLoggingHandlers extends SoapBaseHandler {
     public static class ServerHandler extends SoapLoggingHandlers {
 
         public ServerHandler() {
-            super(Level.INFO);
+            super(Level.valueOf(WsClient.getParam("mail", "debug.server")));
         }
 
         @Override

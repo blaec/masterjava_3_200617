@@ -19,16 +19,17 @@ import java.util.Set;
 @Slf4j
     public class MailWSClient {
     private static final WsClient<MailService> WS_CLIENT;
-    public static final String USER = "user";
-    public static final String PASSWORD = "password";
-    private static final SoapLoggingHandlers.ClientHandler LOGGING_HANDLER = new SoapLoggingHandlers.ClientHandler(Level.DEBUG);
+    public static final String USER = WsClient.getParam("mail", "user");
+    public static final String PASSWORD = WsClient.getParam("mail", "password");
+    private static final SoapLoggingHandlers.ClientHandler LOGGING_HANDLER =
+            new SoapLoggingHandlers.ClientHandler(Level.valueOf(WsClient.getParam("mail", "debug.client")));
 
     static {
         WS_CLIENT = new WsClient<>(Resources.getResource("wsdl/mailService.wsdl"),
                 new QName("http://mail.javaops.ru/", "MailServiceImplService"),
                 MailService.class);
 
-        WS_CLIENT.init("mail.endpoint", "/mail/mailService?wsdl");
+        WS_CLIENT.init("mail", "/mail/mailService?wsdl");
     }
 
 

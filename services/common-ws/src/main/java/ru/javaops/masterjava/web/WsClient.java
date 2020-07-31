@@ -31,7 +31,7 @@ public class WsClient<T> {
     }
 
     public void init(String host, String endpointAddress) {
-        this.endpointAddress = HOSTS.getString(host) + endpointAddress;
+        this.endpointAddress = getParam(host, "endpoint") + endpointAddress;
     }
 
     //  Post is not thread-safe (http://stackoverflow.com/a/10601916/548473)
@@ -58,5 +58,9 @@ public class WsClient<T> {
 
     public static WebStateException getWebStateException(Throwable t, ExceptionType type) {
         return (t instanceof WebStateException) ? (WebStateException) t : new WebStateException(t, type);
+    }
+
+    public static String getParam(String config, String param) {
+        return HOSTS.getConfig(config).getString(param);
     }
 }
