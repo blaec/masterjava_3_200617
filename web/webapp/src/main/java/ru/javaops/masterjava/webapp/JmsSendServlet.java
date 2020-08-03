@@ -1,6 +1,7 @@
 package ru.javaops.masterjava.webapp;
 
 import lombok.extern.slf4j.Slf4j;
+import ru.javaops.masterjava.service.mail.EmailItem;
 
 import javax.jms.*;
 import javax.naming.InitialContext;
@@ -65,9 +66,10 @@ public class JmsSendServlet extends HttpServlet {
     }
 
     private synchronized String sendJms(String users, String subject, String body) throws JMSException {
-        TextMessage testMessage = session.createTextMessage();
-        testMessage.setText(subject);
-        producer.send(testMessage);
+        ObjectMessage objectMessage = session.createObjectMessage();
+        EmailItem emailItem = new EmailItem(users, subject, body);
+        objectMessage.setObject(emailItem);
+        producer.send(objectMessage);
         return "Successfully sent JMS message";
     }
 }
